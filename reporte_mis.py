@@ -1,100 +1,96 @@
+
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+# Configuración de estilos visuales profesionales
+sns.set_theme(style="whitegrid")
 
-# incializamos variables para los KPIs
-total_vehiculos = 0
-sin_revision = 0
-aprobado_2da = 0
-aprobado_3ra = 0
+# ============================================================
+# 1. CONEXIÓN AL REPOSITORIO (RUTA RELATIVA A 'TPS')
+# ============================================================
+columnas_vehiculos = ['usuario', 'placa', 'cedula', 'anio', 'tipo', 'avaluo', 'r1', 'r2', 'r3']
 
-conteo_livianos = 0
-conteo_pesados = 0
-conteo_motos = 0
+# Salimos de 'MIS' (..) y entramos a la base de datos de 'TPS'
+ruta_archivo = '../TPS/data/vehiculos.txt'
 
-# Salimos de la carpeta del MIS y entramos a la del TPS para buscar el archivo
-ruta_archivo = "../TPS/data/vehiculos.txt"
+if not os.path.exists(ruta_archivo):
+    print(f"\n[ERROR] No se encontro el archivo en la ruta: '{os.path.abspath(ruta_archivo)}'")
+    print("Por favor, verifica que la carpeta 'TPS' este justo al lado de 'MIS'.")
+    exit()
 
-print("Leyendo la base de datos de vehiculos línea por línea...")
+# CARPETA DE DESTINO PARA LOS GRÁFICOS (Dentro de MIS)
+carpeta_destino = 'data'
+if not os.path.exists(carpeta_destino):
+    os.makedirs(carpeta_destino)
+    print(f"[INFO] Se ha creado la carpeta '{carpeta_destino}' dentro de MIS automáticamente.\n")
 
-with open(ruta_archivo, "r") as archivo:
-    for linea in archivo:
-        linea = linea.strip() # Limpia espacios y saltos de línea \n
-        if not linea:
-            continue # Si la línea está vacía, se la salta
-            
-        # Separar los datos por cada coma (crea una lista de textos)
-        datos = linea.split(",")
-        total_vehiculos += 1
-        
-        # Guardamos las variables que nos importan según su posición [cite: 1]
-        tipo = datos[4]            # El tipo de vehículo está en la posición 4 [cite: 1]
-        r1 = int(datos[6])         # r1 está en la posición 6 [cite: 1]
-        r2 = int(datos[7])         # r2 está en la posición 7 [cite: 1]
-        r3 = int(datos[8])         # r3 está en la posición 8 [cite: 1]
-        
-        # --- LÓGICA PARA EL KPI 1 Y KPI 2 (Revisiones) ---
-        if r1 == 0 and r2 == 0 and r3 == 0:
-            sin_revision += 1
-        elif r2 == 1:
-            aprobado_2da += 1
-        elif r3 == 1:
-            aprobado_3ra += 1
-            
-        # --- LÓGICA PARA EL KPI 3 (Tipos de vehículos) ---
-        if tipo == "liviano":
-            conteo_livianos += 1
-        elif tipo == "pesado":
-            conteo_pesados += 1
-        elif tipo == "moto":
-            conteo_motos += 1
+# Carga de datos atómicos (TPS) usando Pandas
+print("Cargando el repositorio transaccional...")
+df = pd.read_csv(ruta_archivo, names=columnas_vehiculos, header=None)
+print(f"[OK] Base de datos cargada con éxito. Total registros: {len(df):,}\n")
 
-# Calcular porcentajes básicos
-matriculados_totales = aprobado_2da + aprobado_3ra
-porcentaje_morosidad = (sin_revision / total_vehiculos) * 100
-
-print("\n¡Procesamiento terminado con éxito!")
-print(f"Total de vehículos leídos: {total_vehiculos}")
+# Cálculos base obligatorios para los KPIs
+df['matriculado'] = (df['r1'] == 1) | (df['r2'] == 1) | (df['r3'] == 1)
+df['antiguedad'] = 2026 - df['anio']
 
 
-# KPI 1: GRÁFICO DE BARRAS (Matriculados vs Morosos)
+# ============================================================
+# PROCESAMIENTO KPI 1: PORCENTAJE DE VEHÍCULOS POR TIPO
+# ============================================================
+print("Procesando KPI 1: Porcentaje de vehiculos...")
+conteo_tipos = df['tipo'].value_counts()
 
-plt.figure(figsize=(6, 4))
-categorias_kpi1 = ['Matriculados', 'Morosos (Sin Revisión)']
-valores_kpi1 = [matriculados_totales, sin_revision]
-colores_kpi1 = ['green', 'red']
+plt.figure(figsize=(6, 6))
+plt.pie(conteo_tipos.values, labels=conteo_tipos.index, autopct='%1.1f%%', startangle=140, 
+        colors=['#2c3e50', '#2980b9', '#f1c40f'], textprops={'fontweight': 'bold', 'size': 11})
+plt.title('KPI 1: Porcentaje de Vehículos por Tipo\n(Composición del Parque Automotor)', fontsize=12, fontweight='bold')
+plt.tight_layout()
+plt.savefig('data/kpi1_porcentaje_tipo.png') # Guardado en MIS/data/
+plt.close()
 
-plt.bar(categorias_kpi1, valores_kpi1, color=colores_kpi1)
-plt.title(f'KPI 1: Control de Matriculación Anual\n(Morosidad: {porcentaje_morosidad:.2f}%)')
+
+# ============================================================
+# PROCESAMIENTO KPI 2: RIESGO VEHICULAR POR ANTIGÜEDAD Y FALLAS
+# ============================================================
+print("Procesando KPI 2: Riesgo vehicular...")
+def evaluar_riesgo(row):
+    if row['antiguedad'] > 15 and row['r1'] == 0:
+        return 'Alto Riesgo'
+    elif row['antiguedad'] > 5 and row['r1'] == 0:
+        return 'Riesgo Moderado'
+    return 'Bajo Riesgo'
+
+df['riesgo'] = df.apply(evaluar_riesgo, axis=1)
+conteo_riesgo = df['riesgo'].value_counts().reindex(['Bajo Riesgo', 'Riesgo Moderado', 'Alto Riesgo'])
+
+plt.figure(figsize=(7, 4.5))
+sns.barplot(x=conteo_riesgo.index, y=conteo_riesgo.values, palette=['#2ecc71', '#f39c12', '#e74c3c'])
+plt.title('KPI 2: Índice de Riesgo Vehicular Estructural\n(Antigüedad + Intentos Fallidos)', fontsize=12, fontweight='bold')
+plt.ylabel('Cantidad de Unidades')
+for i, v in enumerate(conteo_riesgo.values):
+    plt.text(i, v + 500, f"{v:,}", ha='center', fontweight='bold')
+plt.tight_layout()
+plt.savefig('data/kpi2_riesgo_vehicular.png') # Guardado en MIS/data/
+plt.close()
+
+
+# ============================================================
+# PROCESAMIENTO KPI 3: APROBACIONES POR TIPO DE VEHÍCULO
+# ============================================================
+print("Procesando KPI 3: Tasas de aprobacion...")
+df_kpi3 = df.groupby(['tipo', 'matriculado']).size().unstack(fill_value=0)
+df_kpi3.columns = ['No Aprobado (Moroso)', 'Aprobado (Matriculado)']
+
+plt.figure(figsize=(8, 5))
+df_kpi3.plot(kind='bar', stacked=False, color=['#e74c3c', '#2ecc71'], ax=plt.gca(), width=0.7)
+plt.title('KPI 3: Tasa de Aprobación Final Segmentada por Tipo', fontsize=12, fontweight='bold')
 plt.ylabel('Cantidad de Vehículos')
+plt.xlabel('Tipo de Vehículo')
+plt.xticks(rotation=0)
+plt.legend(title='Estado Final')
+plt.tight_layout()
+plt.savefig('data/kpi3_aprobacion_tipo.png') # Guardado en MIS/data/
+plt.close()
 
-# Guardar el dibujo como imagen
-plt.savefig('kpi1_morosidad.png')
-plt.show() # Muestra el gráfico en pantalla
-
-
-# KPI 2: GRÁFICO DE LÍNEAS (Eficiencia en qué cita aprueban)
-
-plt.figure(figsize=(6, 4))
-citas_kpi2 = ['1ra Cita', '2da Cita', '3ra Cita']
-valores_kpi2 = [0, aprobado_2da, aprobado_3ra] # 0 en la primera porque lo pediste así [cite: 1]
-
-plt.plot(citas_kpi2, valores_kpi2, marker='o', color='blue', linewidth=2)
-plt.title('KPI 2: Curva de Eficiencia en Revisión Técnica')
-plt.xlabel('Instancia de Aprobación')
-plt.ylabel('Vehículos Aprobados')
-
-plt.savefig('kpi2_eficiencia.png')
-plt.show()
-
-
-# KPI 3: GRÁFICO DE PASTEL (Distribución del Parque)
-
-plt.figure(figsize=(5, 5))
-etiquetas_kpi3 = ['Livianos', 'Pesados', 'Motos']
-valores_kpi3 = [conteo_livianos, conteo_pesados, conteo_motos]
-colores_kpi3 = ['lightblue', 'orange', 'yellow']
-
-plt.pie(valores_kpi3, labels=etiquetas_kpi3, autopct='%1.1f%%', startangle=140, colors=colores_kpi3)
-plt.title('KPI 3: Distribución del Parque Automotor')
-
-plt.savefig('kpi3_distribucion.png')
-plt.show()
+print("\n[PROCESO TERMINADO] Los 3 gráficos han sido generados y guardados con éxito en 'MIS/data/'.")
