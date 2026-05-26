@@ -1,5 +1,5 @@
 
-# MIS: Dashboard Gerencial y Visualización de KPIs 📊🚗
+# MIS: Dashboard Gerencial y Visualización de KPIs
 
 Este repositorio contiene la capa del **Sistema de Información Gerencial (MIS)** del proyecto de Matriculación Vehicular. Su objetivo principal es consumir los datos atómicos y transaccionales generados por el **TPS (Transaction Processing System)** desarrollado en C, consolidarlos en un repositorio común y transformarlos en reportes estructurados (KPIs) para el apoyo a la toma de decisiones estratégicas.
 
