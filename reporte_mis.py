@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import os
 
-# 1. ASEGURAR QUE EXISTA LA CARPETA DATA DENTRO DEL MIS
+# 1. DETERMINAR LA CARPETA DATA DENTRO DEL MIS
 if not os.path.exists("data"):
     os.makedirs("data")
 
-# ============================================================
+
 # 2. INICIALIZACIÓN DE VARIABLES PARA LOS 8 KPIs
-# ============================================================
+
 total_vehiculos = 0
 sin_revision = 0
 aprobado_2da = 0
@@ -20,7 +20,7 @@ conteo_motos = 0
 recaudacion_real = 0.0
 recaudacion_proyectada_total = 0.0
 
-# Variables para el NUEVO KPI 5 Avanzado (Riesgo Mecánico)
+# Variables para el KPI 5 (Riesgo Mecánico)
 reinspecciones_autos_viejos = 0  # Más de 15 años de antigüedad (fabricados antes de 2011)
 reinspecciones_autos_nuevos = 0  # Menos de 15 años de antigüedad (fabricados desde 2011)
 
@@ -33,9 +33,9 @@ matriculados_por_tipo = {"pesado": 0, "liviano": 0, "moto": 0}
 # KPI 8: Control de carga horaria/calendario por último dígito de placa
 saturacion_placa = {i: 0 for i in range(10)}
 
-# ============================================================
-# 3. EXTRACCIÓN Y PROCESAMIENTO DE DATOS EN UN SOLO BUCLE (ETL)
-# ============================================================
+
+# 3. EXTRACCIÓN Y PROCESAMIENTO DE DATOS 
+
 ruta_archivo = "../TPS/data/vehiculos.txt"
 print("[SISTEMA MIS] Leyendo base de datos transaccional del TPS...")
 
@@ -60,7 +60,7 @@ with open(ruta_archivo, "r") as archivo:
         es_matriculado = (r1 == 1 or r2 == 1 or r3 == 1)
         antiguedad_anios = 2026 - anio
         
-        # --- LÓGICA DE REVISIONES (KPI 1 y KPI 2) ---
+        # LÓGICA DE REVISIONES (KPI 1 y KPI 2) 
         if not es_matriculado:
             sin_revision += 1
         elif r2 == 1:
@@ -68,7 +68,7 @@ with open(ruta_archivo, "r") as archivo:
         elif r3 == 1:
             aprobado_3ra += 1
 
-        # --- LÓGICA DE CLASIFICACIÓN (KPI 3 y KPI 6) ---
+        # LÓGICA DE CLASIFICACIÓN (KPI 3 y KPI 6) 
         if tipo == "liviano":
             conteo_livianos += 1
         elif tipo == "pesado":
@@ -80,7 +80,7 @@ with open(ruta_archivo, "r") as archivo:
             conteos_por_tipo[tipo] += 1
             antiguedad_por_tipo[tipo] += antiguedad_anios
             
-        # --- LÓGICA FINANCIERA (KPI 4 y KPI 7) ---
+        # LÓGICA FINANCIERA (KPI 4 y KPI 7) 
         tasa_base = 200.0 if tipo == "pesado" else 25.0
         valor_matricula = tasa_base + (antiguedad_anios * 5.0) + (0.0 if es_matriculado else 50.0)
         recaudacion_proyectada_total += valor_matricula
@@ -90,7 +90,7 @@ with open(ruta_archivo, "r") as archivo:
             matriculados_por_tipo[tipo] += 1
             avaluo_total_por_tipo[tipo] += valor_matricula
 
-        # --- NUEVA LÓGICA AVANZADA: CRUCE DE RIESGO MECÁNICO (KPI 5) ---
+        # CRUCE DE RIESGO MECÁNICO (KPI 5) 
         # Si el auto necesitó ir a re-inspección (2da o 3ra cita)
         if r2 == 1 or r3 == 1:
             if antiguedad_anios > 15:
@@ -113,9 +113,8 @@ tipos_lista = list(antiguedad_por_tipo.keys())
 print(f"[OK] {total_vehiculos:,} registros transaccionales consolidados en memoria.\n")
 
 
-# ============================================================
-# BLOQUE A: REPORTES PROGRAMADOS (ROUTINE REPORTS)
-# ============================================================
+# REPORTES PROGRAMADOS (ROUTINE REPORTS)
+
 print("[MIS] Exportando Reportes Programados...")
 
 # KPI 1: Control de Matriculación Anual
@@ -146,9 +145,8 @@ plt.savefig('data/kpi8.png')
 plt.close()
 
 
-# ============================================================
-# BLOQUE B: REPORTES DE INDICADORES CLAVE (KEY-INDICATOR REPORTS)
-# ============================================================
+# REPORTES DE INDICADORES CLAVE (KEY-INDICATOR REPORTS)
+
 print("[MIS] Exportando Reportes de Indicadores Clave...")
 
 # KPI 2: Curva de Eficiencia de Citas
