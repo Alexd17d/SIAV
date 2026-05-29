@@ -29,12 +29,12 @@ for ruta in rutas_probables:
 
 if ruta_archivo is None:
     raise FileNotFoundError(
-        "❌ [ERROR CRÍTICO] No se encontró el archivo 'vehiculos.txt'.\n"
+        "[ERROR CRÍTICO] No se encontró el archivo 'vehiculos.txt'.\n"
         "Asegúrate de colocar la carpeta 'TPS' o el archivo txt junto a este script."
     )
 
-print(f"📦 [SISTEMA MIS] Base de datos detectada en: {ruta_archivo}")
-print("[SISTEMA MIS] Procesando segmentación cruzada en memoria...")
+print(f"Base de datos detectada en: {ruta_archivo}")
+print("Procesando segmentación cruzada en memoria...")
 
 
 # 2. INICIALIZACIÓN DE MATRICES DE ANALÍTICA AVANZADA
