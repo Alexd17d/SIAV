@@ -4,11 +4,11 @@ Para ejecutar el Dashboard interactivo con los 8 KPIs segmentados de forma corre
 
 <no-prerender>
 <a href="https://colab.research.google.com/drive/1--XL2eEP9730UiB-Ptih4g6JJg_SZkIP?usp=sharing" target="_blank" style="text-decoration: none;">
-  <div style="display: inline-flex; align-items: center; background: linear-gradient(135deg, #1a1b20 0%, #121316 100%); border: 1px solid #3498db; border-radius: 8px; padding: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Python" style="width: 24px; height: 24px; margin-right: 12px;">
+  <div style="display: inline-flex; align-items: center; background: linear-gradient(135deg, #1e222b 0%, #121316 100%); border: 2px solid #3498db; border-radius: 12px; padding: 18px 32px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin: 15px 0;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Python" style="width: 42px; height: 42px; margin-right: 18px;">
     <div style="text-align: left;">
-      <span style="display: block; color: #8a8f98; font-size: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Entorno Virtual</span>
-      <span style="display: block; color: #ffffff; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: bold; letter-spacing: 0.5px;">🚀 Abrir Dashboard en Colab</span>
+      <span style="display: block; color: #52a0fd; font-size: 11px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Google Colab Environment</span>
+      <span style="display: block; color: #ffffff; font-size: 19px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 800; letter-spacing: 0.5px;">🚀 CLIC AQUÍ: ABRIR DASHBOARD INTERACTIVO</span>
     </div>
   </div>
 </a>
