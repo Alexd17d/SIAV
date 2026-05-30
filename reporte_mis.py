@@ -142,12 +142,12 @@ total_reinspecciones = aprobado_2da + aprobado_3ra
 # 4. DESPLIEGUE DEL RESUMEN EJECUTIVO EN LA TERMINAL
 
 print("="*75)
-print("   MIS DASHBOARD - RESUMEN DE SALUD DEL NEGOCIO  ")
+print("   CONTROL DE MARGEN Y RENTABILIDAD INTERNA   ")
 print("="*75)
 print(f"  REGISTROS TOTALES     :  {total_vehiculos:,} vehículos procesados")
 print(f"  CLIENTES QUE SE VAN   :  {tasa_churn:.2f}% de abandono comercial")
 print("-"*75)
-print(f"  ÁREA              ¿QUÉ SIGNIFICA?                  VALOR")
+print(f"  ÁREA             INDICADOR CRÍTICO                  VALOR")
 print("  ───────────────────────────────────────────────────────────────────────────")
 print(f"  DINERO REAL      Dinero que ya entró al banco       ${recaudacion_real:,.2f}")
 print(f"  DINERO PERDIDO   Cuentas que no se cobraron         ${fuga_dinero:,.2f}")
